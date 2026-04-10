@@ -13,7 +13,10 @@ automation-mobile-robot-framework/
 ├── resources/
 │   ├── keywords.resource       # Keyword/step definitions
 │   └── variables.resource      # Variables, locators, and configuration
-├── results_run/                # Test output (auto-generated)
+├── results_run/                # Robot Framework output (auto-generated)
+├── allure-results/             # Allure raw results (auto-generated)
+├── allure-report/              # Allure HTML report (auto-generated)
+├── .venv/                      # Python virtual environment
 ├── requirements.txt            # Python dependencies
 └── .gitignore
 ```
@@ -75,14 +78,20 @@ cd automation-mobile-robot-framework
 
 ### 2. Create Virtual Environment
 ```bash
-python3 -m venv venv
-source venv/bin/activate        # macOS / Linux
-# venv\Scripts\activate         # Windows
+python3 -m venv .venv
+source .venv/bin/activate        # macOS / Linux
+# .venv\Scripts\activate         # Windows
 ```
 
 ### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
+```
+
+### 4. Install Allure CLI (macOS)
+```bash
+brew install allure
+allure --version
 ```
 
 ---
@@ -104,8 +113,13 @@ adb devices
 
 ### 3. Activate Virtual Environment
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
+
+> To deactivate the virtual environment when done:
+> ```bash
+> deactivate
+> ```
 
 ### 4. Run All Tests
 ```bash
@@ -128,6 +142,7 @@ robot --outputdir results_run -i smoke tests/login_tests.robot
 
 ## Viewing Test Results
 
+### Robot Framework Report (default)
 After the tests finish, open the following file in a browser:
 ```bash
 open results_run/report.html    # macOS
@@ -139,6 +154,22 @@ open results_run/report.html    # macOS
 | `results_run/report.html` | Summary of test results (PASS/FAIL) |
 | `results_run/log.html` | Detailed execution steps for each test case |
 | `results_run/output.xml` | Raw output in XML format |
+
+### Allure Report
+
+**Run tests with Allure listener:**
+```bash
+robot \
+  --listener allure_robotframework:allure-results \
+  --outputdir results_run \
+  tests/login_tests.robot
+```
+
+**Generate and open Allure report:**
+```bash
+allure generate allure-results -o allure-report --clean
+allure open allure-report
+```
 
 ---
 
@@ -157,7 +188,9 @@ open results_run/report.html    # macOS
 |-------|---------|
 | Robot Framework | 7.4.2 |
 | robotframework-appiumlibrary | 3.2.1 |
+| allure-robotframework | 2.15.3 |
 | Appium Server | 3.2.2 |
 | Appium UiAutomator2 Driver | 7.0.0 |
+| Allure CLI | 2.39.0 |
 | Platform | Android |
 | Application | Paper.id (`id.paper.invoicer`) |
